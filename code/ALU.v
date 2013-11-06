@@ -6,7 +6,8 @@
 //----------------------------------------------
 //Date:        11.05.13
 //----------------------------------------------
-//Description:
+//Description: 32-bit alu with AND, OR, ADD, SUB, NOR, NAND, SLT and zeor
+//             detect
 //--------------------------------------------------------------------------------
 
 module ALU(
@@ -48,7 +49,7 @@ always @(ctrl_i, src1_i, src2_i) begin
     ALU_SUB : result_o <= src1_i - src2_i;
     ALU_NOR : result_o <= ~(src1_i & src2_i);
     ALU_NAND: result_o <= ~(src1_i | src2_i);
-    ALU_SLT : result_o <= (src1_i < src1_i) ? 1 : 0;
+    ALU_SLT : result_o <= (src1_i < src2_i) ? 1 : 0;
     default : result_o <= 0;
   endcase
 end

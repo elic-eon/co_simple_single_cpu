@@ -78,7 +78,7 @@ Reg_File RF(
       .RDdata_i(ALU_result_o),
       .RegWrite_i(RegWrite_o),
       .RSdata_o(RSdata_o),
-      .RTdata_o(RSdata_o)
+      .RTdata_o(RTdata_o)
       );
 
 Decoder Decoder(
