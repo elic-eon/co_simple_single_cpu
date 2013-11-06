@@ -7,4 +7,5 @@ all: $(OBJS)
 $(OBJS): $(SRCS)
 	$(CC) -o $(OBJS) $(SRCS)
 
-
+clean:
+	rm -rf Simple_Single_CPU wave.vcd CO_P2_Result.txt
