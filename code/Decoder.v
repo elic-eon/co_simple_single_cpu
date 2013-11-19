@@ -15,7 +15,9 @@ module Decoder(
 	ALU_op_o,
 	ALUSrc_o,
 	RegDst_o,
-	Branch_o
+	Branch_o,
+  Signed_o,
+  Not_equal_o
 	);
 
 //I/O ports
@@ -26,6 +28,8 @@ output [3-1:0] ALU_op_o;
 output         ALUSrc_o;
 output         RegDst_o;
 output         Branch_o;
+output         Signed_o;
+output         Not_equal_o;
 
 //Internal Signals
 reg    [3-1:0] ALU_op_o;
@@ -63,6 +67,8 @@ assign         RegDst_o    = R_format;
 assign         ALUSrc_o    = addi || slti || lui || ori;
 assign         Branch_o    = beq || bne;
 assign         RegWrite_o  = ~beq && ~bne;
+assign         Signed_o    = ~ori;
+assign         Not_equal_o = bne;
 
 always @(*) begin
   case(instr_op_i)

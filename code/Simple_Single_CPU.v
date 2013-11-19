@@ -29,6 +29,8 @@ wire     [32-1:0]  Shifter_o;
 wire     [32-1:0]  instr_branch_o;
 wire     [32-1:0]  instr_next_o;
 wire     [32-1:0]  ALU_result_o;
+wire     [32-1:0]  Extend_o;
+wire     [32-1:0]  UE_o;
 
 wire     [5-1:0]   RDaddr_o;
 
@@ -42,6 +44,9 @@ wire               RegWrite_o;
 wire               Branch_o;
 wire               ALU_zero_o;
 wire               sel_branch_o;
+wire               Signed_o;
+wire               Not_equal_o;
+wire               bne_w;
 
 //Greate componentes
 ProgramCounter PC(
@@ -87,7 +92,9 @@ Decoder Decoder(
 	    .ALU_op_o(ALU_op_o),
 	    .ALUSrc_o(ALUSrc_o),
 	    .RegDst_o(RegDst_o),
-  		.Branch_o(Branch_o)
+  		.Branch_o(Branch_o),
+      .Signed_o(Signed_o),
+      .Not_equal_o(Not_equal_o)
 	    );
 
 ALU_Ctrl AC(
@@ -101,9 +108,19 @@ Sign_Extend SE(
       .data_o(SE_o)
       );
 
+Unsign_Extend UE(
+      .data_i(instr_o[15:0]),
+      .data_o(UE_o)
+      );
+MUX_2to1 #(.size(32)) MUX_Extend(
+      .data0_i(UE_o),
+      .data1_i(SE_o),
+      .select_i(Signed_o),
+      .data_o(Extend_o)
+      );
 MUX_2to1 #(.size(32)) Mux_ALUSrc(
       .data0_i(RTdata_o),
-      .data1_i(SE_o),
+      .data1_i(Extend_o),
       .select_i(ALUSrc_o),
       .data_o(ALU_src2_o)
       );
@@ -111,6 +128,7 @@ MUX_2to1 #(.size(32)) Mux_ALUSrc(
 ALU ALU(
       .src1_i(RSdata_o),
 	    .src2_i(ALU_src2_o),
+      .shamt_i(instr_o[10:6]),
 	    .ctrl_i(ALU_ctrl_o),
 	    .result_o(ALU_result_o),
   		.zero_o(ALU_zero_o)
@@ -127,7 +145,9 @@ Shift_Left_Two_32 Shifter(
       .data_o(Shifter_o)
       );
 
-and(sel_branch_o ,ALU_zero_o, Branch_o);
+//assign bne_w = (~ALU_zero_o && Not_equal_o) || (ALU_zero_o && ~Not_equal_o);
+xor(bne_w, ALU_zero_o, Not_equal_o);
+and(sel_branch_o ,bne_w, Branch_o);
 
 MUX_2to1 #(.size(32)) Mux_PC_Source(
       .data0_i(instr_add_4_o),

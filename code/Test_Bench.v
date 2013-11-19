@@ -41,7 +41,9 @@ initial  begin
 	count = 0;
     end_count=25;
     #(`CYCLE_TIME)      RST = 1;
-    #(`CYCLE_TIME*`END_COUNT)	$fclose(handle); $stop; $finish();
+    #(`CYCLE_TIME*`END_COUNT)
+    $fclose(handle);
+    $finish();
 end
 
 //Print result to "CO_P2_Result.txt"
